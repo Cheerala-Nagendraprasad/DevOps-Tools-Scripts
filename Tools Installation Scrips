@@ -1,4 +1,8 @@
-vi jenkins.sh
+########
+Installing Jenkins in UBUNTU System
+########
+
+cat <<EOF | sudo tee jenkins.sh
 #!/bin/bash
 sudo apt update -y
 wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | sudo tee /etc/apt/keyrings/adoptium.asc
@@ -12,3 +16,56 @@ sudo apt-get update -y
 sudo apt-get install jenkins -y
 sudo systemctl start jenkins
 sudo systemctl status jenkins
+EOF
+
+sudo chmod 777 jenkins.sh
+sudo su   #move into root and run
+./jenkins.sh    # this will installl jenkins
+
+Once Jenkins is installed, you will need to go to your AWS EC2 Security Group and open Inbound Port 8080, since Jenkins works on Port 8080.
+Now, grab your Public IP Address
+
+<EC2 Public IP Address:8080>
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+###########################################################################################################################################################
+
+Install Docker
+
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+sudo usermod -aG docker ubuntu
+newgrp docker
+sudo chmod 777 /var/run/docker.sock
+
+############################################################################################################################
+#After the docker installation, we create a sonarqube container (Remember to add 9000 ports in the security group).
+sudo chmod 777 /var/run/docker.sock
+docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
+
+Enter username and password, click on login and change password
+username admin
+password admin
+############################################################################################################################
+
+Install Trivy
+cat <<EOF | sudo tee Trivi_script.sh
+sudo apt-get install wget apt-transport-https gnupg lsb-release -y
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+sudo apt-get update
+sudo apt-get install trivy -y
+EOF
+
+sudo chmod 777 script.sh
+./Trivi_script.sh
