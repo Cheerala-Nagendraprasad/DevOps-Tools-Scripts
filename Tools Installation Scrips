@@ -59,6 +59,7 @@ password admin
 ############################################################################################################################
 
 Install Trivy
+
 cat <<EOF | sudo tee Trivi_script.sh
 sudo apt-get install wget apt-transport-https gnupg lsb-release -y
 wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
@@ -67,5 +68,32 @@ sudo apt-get update
 sudo apt-get install trivy -y
 EOF
 
-sudo chmod 777 script.sh
+sudo chmod 777 Trivi_script.sh
 ./Trivi_script.sh
+############################################################################################################################
+
+Install Plugins like JDK, Sonarqube Scanner, NodeJs, OWASP Dependency Check
+Install Plugin
+Goto Manage Jenkins →Plugins → Available Plugins →
+
+Install below plugins
+
+Blue ocean
+
+1 → Eclipse Temurin Installer
+
+2 → SonarQube Scanner
+
+3 → NodeJs Plugin
+
+4 → Docker
+
+5 → Docker commons
+
+6 → Docker pipeline
+
+7 → Docker API
+
+8 → Docker Build step
+
+9 → Owasp Dependency Check
